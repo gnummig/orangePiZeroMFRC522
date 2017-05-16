@@ -1,9 +1,9 @@
 #! /bin/bash
 #Start with fresh  5.25 jessie server image.
-apt-get --yes update
-apt-get --yes upgrade 
-apt-get --yes install python-dev python-pip
-pip install spidev
+sudo pt-get --yes update
+sudo apt-get --yes upgrade 
+sudo apt-get --yes install python-dev python-pip
+sudo pip install spidev
 python setup.py install
 pip install --upgrade pip
 sudo pip install setuptools
