@@ -18,11 +18,7 @@ def end_read(signal,frame):
 
 # Hook the SIGINT
 signal.signal(signal.SIGINT, end_read)
-# a class for a user
-class user(object):
-    def __init__(self,uid,name):
-        self.uid=uid
-        self.name=name
+
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
 
@@ -55,6 +51,8 @@ while continue_reading:
             print( ValidUIDs(uid))
         else:
             ValidUIDs[uid]= input("enter new name:  ")
+            print("new person added: ")
+            print(ValidUIDs(uid))
         # This is the default key for authentication
         key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
 
