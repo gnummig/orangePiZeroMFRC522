@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import shelve 
-import RPi.GPIO as GPIO
+import shelve
+import pyA20.gpio as GPIO
 import MFRC522
 import signal
 
