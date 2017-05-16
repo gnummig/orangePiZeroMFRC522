@@ -49,7 +49,7 @@ while continue_reading:
         # Print UID
         print "Card read UID: "+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
         # open pickle acces db
-            ValidUIDs = shelve.open("UIDs.db", writeback=True)
+        ValidUIDs = shelve.open("UIDs.db", writeback=True)
         if uid in ValidUIDs:
             print("acces granted to ")
             print( ValidUIDs(uid))
