@@ -9,7 +9,7 @@ pip install --upgrade pip
 sudo pip install setuptools
 sudo pip install pip
 sudo apt install python-dev
-#cd ..
+cd ..
 git clone https://github.com/duxingkei33/orangepi_PC_gpio_pyH3
 cd orangepi_PC_gpio_pyH3
 python setup.py install
