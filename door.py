@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import pickle
+import shelve 
 import RPi.GPIO as GPIO
 import MFRC522
 import signal
@@ -18,7 +18,11 @@ def end_read(signal,frame):
 
 # Hook the SIGINT
 signal.signal(signal.SIGINT, end_read)
-
+# a class for a user
+class user(object):
+    def __init__(self,uid,name):
+        self.uid=uid
+        self.name=name
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
 
@@ -28,14 +32,14 @@ print "Press Ctrl-C to stop."
 
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 while continue_reading:
-    
+
     # Scan for cards    
     (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
 
     # If a card is found
     if status == MIFAREReader.MI_OK:
         print "Card detected"
-    
+
     # Get the UID of the card
     (status,uid) = MIFAREReader.MFRC522_Anticoll()
 
@@ -45,18 +49,15 @@ while continue_reading:
         # Print UID
         print "Card read UID: "+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
         # open pickle acces db
-        with open('UIDs.pkl', 'rb') as input:
-            ValidUIDs = pickle.load(input)
+            ValidUIDs = shelve.open("UIDs.db", writeback=True)
         if uid in ValidUIDs:
             print("acces granted to ")
             print( ValidUIDs(uid))
-        else 
-            ValidUIDs[uid]= input(" enter new name ")
-            with open('UIDs.pkl', 'wb') as output:
-                pickle.dump(ValidUIDs, output, pickle.HIGHEST_PROTOCOL)
+        else:
+            ValidUIDs[uid]= input("enter new name:  ")
         # This is the default key for authentication
         key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
-        
+
         # Select the scanned tag
         MIFAREReader.MFRC522_SelectTag(uid)
 
