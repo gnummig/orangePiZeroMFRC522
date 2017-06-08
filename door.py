@@ -44,7 +44,7 @@ while continue_reading:
 
         # Print UID
         print "Card read UID: "+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
-        intUID=2**24*uid[0]+2**16*uid[1]+2**8*uid[2]+uid[3]
+        intUID=int(2**24*uid[0]+2**16*uid[1]+2**8*uid[2]+uid[3])
         # open shelve to acces datastore
         ValidUIDs = shelve.open("UIDs.db", writeback=True)
         if intUID in ValidUIDs:
