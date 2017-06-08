@@ -44,15 +44,16 @@ while continue_reading:
 
         # Print UID
         print "Card read UID: "+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
-        # open pickle acces db
+        intUID=2**24*uid[0]+2**16*uid[1]+2**8*uid[2]+uid[3]
+        # open shelve to acces datastore
         ValidUIDs = shelve.open("UIDs.db", writeback=True)
-        if uid in ValidUIDs:
+        if intUID in ValidUIDs:
             print("acces granted to ")
-            print( ValidUIDs(uid))
+            print( ValidUIDs(intUID))
         else:
-            ValidUIDs[uid]= input("enter new name:  ")
+            ValidUIDs[intUID]= input("enter new name:  ")
             print("new person added: ")
-            print(ValidUIDs(uid))
+            print(ValidUIDs(intUID))
         # This is the default key for authentication
         key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
 
