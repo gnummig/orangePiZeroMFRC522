@@ -2,9 +2,11 @@
 # -*- coding: utf8 -*-
 
 import shelve
-import pyA20.gpio as GPIO
+from pyA20.gpio import gpio as GPIO
+from pyA20.gpio import port
 import MFRC522
 import signal
+from time import sleep
 
 
 continue_reading = True
@@ -18,7 +20,10 @@ def end_read(signal,frame):
 
 # Hook the SIGINT
 signal.signal(signal.SIGINT, end_read)
-
+# configure gpio
+GPIO.init()
+gpio.setcfg(18, gpio.OUTPUT)
+GPIO.output(18,1) # high means off 
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
 
@@ -43,17 +48,20 @@ while continue_reading:
     if status == MIFAREReader.MI_OK:
 
         # Print UID
-        print "Card read UID: "+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
-        intUID=int(2**24*uid[0]+2**16*uid[1]+2**8*uid[2]+uid[3])
+	UID=str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
+        print "Card read UID: "+UID
         # open shelve to acces datastore
         ValidUIDs = shelve.open("UIDs.db", writeback=True)
-        if intUID in ValidUIDs:
+        if UID in ValidUIDs:
             print("acces granted to ")
-            print( ValidUIDs(intUID))
-        else:
-            ValidUIDs[intUID]= input("enter new name:  ")
-            print("new person added: ")
-            print(ValidUIDs(intUID))
+            print( ValidUIDs[UID])
+	    GPIO.output(18,0)
+	    sleep(5)
+	    GPIO.output(18,1)
+	else: 
+	    ValidUIDs[UID]=raw_input("enter name")
+	    print "key: "+UID+" registered as "+ValidUIDs[UID]
+
         # This is the default key for authentication
         key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
 
