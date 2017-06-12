@@ -22,7 +22,7 @@ def end_read(signal,frame):
 signal.signal(signal.SIGINT, end_read)
 # configure gpio
 GPIO.init()
-gpio.setcfg(18, gpio.OUTPUT)
+GPIO.setcfg(18, GPIO.OUTPUT)
 GPIO.output(18,1) # high means off 
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
@@ -58,25 +58,26 @@ while continue_reading:
 	    GPIO.output(18,0)
 	    sleep(5)
 	    GPIO.output(18,1)
+	    print "door closed"
 	else: 
-	    ValidUIDs[UID]=raw_input("enter name")
+	    ValidUIDs[UID]=raw_input("enter name: ")
 	    print "key: "+UID+" registered as "+ValidUIDs[UID]
 
         # This is the default key for authentication
-        key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
+        #key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
 
         # Select the scanned tag
-        MIFAREReader.MFRC522_SelectTag(uid)
+        #MIFAREReader.MFRC522_SelectTag(uid)
 
         # Authenticate
-        status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, 8, key, uid)
+        #status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, 8, key, uid)
 
         # Check if authenticated
-        if status == MIFAREReader.MI_OK:
-            MIFAREReader.MFRC522_Read(8)
-            MIFAREReader.MFRC522_StopCrypto1()
-        else:
-            print "Authentication error"
+        #if status == MIFAREReader.MI_OK:
+        #    MIFAREReader.MFRC522_Read(8)
+        #    MIFAREReader.MFRC522_StopCrypto1()
+        #else:
+        #    print "Authentication error"
 
 
 	
