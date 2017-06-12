@@ -9,13 +9,8 @@ pip install --upgrade pip
 sudo pip install setuptools
 sudo pip install pip
 sudo apt install python-dev
-cd ..
 git clone https://github.com/duxingkei33/orangepi_PC_gpio_pyH3
-cd orangepi_PC_gpio_pyH3
-python setup.py install
-cd ..
+python orangepi_PC_gpio_pyH3/setup.py install
 git clone https://github.com/lthiery/SPI-Py.git
-cd SPI-Py
-python setup.py install
-cd ..
+python SPI-Py/setup.py install
 git clone https://github.com/gnummig/MFRC522-python
