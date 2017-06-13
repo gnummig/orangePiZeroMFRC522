@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 import shelve
-from pyA20.gpio import gpio as GPIO
+from pyA20.gpio import gpio
 from pyA20.gpio import port
 import MFRC522
 import signal
@@ -16,14 +16,14 @@ def end_read(signal,frame):
     global continue_reading
     print "Ctrl+C captured, ending read."
     continue_reading = False
-    GPIO.cleanup()
+#    gpio.cleanup()
 
 # Hook the SIGINT
 signal.signal(signal.SIGINT, end_read)
 # configure gpio
-GPIO.init()
-GPIO.setcfg(18, GPIO.OUTPUT)
-GPIO.output(18,1) # high means off 
+gpio.init()
+gpio.setcfg(18, gpio.OUTPUT)
+gpio.output(18,1) # high means off 
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
 
@@ -55,13 +55,13 @@ while continue_reading:
         if UID in ValidUIDs:
             print("acces granted to ")
             print( ValidUIDs[UID])
-	    GPIO.output(18,0)
-	    sleep(5)
-	    GPIO.output(18,1)
-	    print "door closed"
-	else: 
-	    ValidUIDs[UID]=raw_input("enter name: ")
-	    print "key: "+UID+" registered as "+ValidUIDs[UID]
+        GPIO.output(18,0)
+        sleep(5)
+        GPIO.output(18,1)
+        print "door closed"
+	else:
+        ValidUIDs[UID]=raw_input("enter name: ")
+        print "key: "+UID+" registered as "+ValidUIDs[UID]
 
         # This is the default key for authentication
         #key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
@@ -79,7 +79,5 @@ while continue_reading:
         #else:
         #    print "Authentication error"
 
-
-	
 
 

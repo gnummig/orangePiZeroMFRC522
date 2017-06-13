@@ -23,4 +23,5 @@ python setup.py install
 cd ..
 #get MFRC533 library
 git clone https://github.com/gnummig/MFRC522-python
-sudo sed -i "/exit 0/c\ exec sudo python \/home\/door\/orangePiZeroMFRC522\/door.py & \n exit 0" /etc/rc.local 
+sudo sed -i "/exit 0/c\exec \/usr\/bin\/python \/root\/orangePiZeroMFRC522\/door.py 1>\/dev\/null 2>&1 & \nexit 0" /etc/rc.local 
+
