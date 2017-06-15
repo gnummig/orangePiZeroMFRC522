@@ -11,6 +11,7 @@ pip install pip --user
 #apt install python-dev --user
 # change owndership of the python library folder to be able to run librarys as user door
 #sudo chown -R door /usr/local/lib/
+cd ..
 # get gpio library
 git clone https://github.com/duxingkei33/orangepi_PC_gpio_pyH3
 cd orangepi_PC_gpio_pyH3/
@@ -23,5 +24,9 @@ python setup.py install
 cd ..
 #get MFRC533 library
 git clone https://github.com/gnummig/MFRC522-python
-sudo sed -i "/exit 0/c\exec \/usr\/bin\/python \/root\/orangePiZeroMFRC522\/door.py 1>\/dev\/null 2>&1 & \nexit 0" /etc/rc.local 
+#sudo sed -i "/exit 0/c\exec \/usr\/bin\/python \/root\/orangePiZeroMFRC522\/door.py 1>\/dev\/null 2>&1 & \nexit 0" /etc/rc.local 
+mv orangePiZeroMFRC522/initdoor.sh /etc/init.d/initdoor.sh
+ln -s /etc/init.d/initdoor.sh /etc/rc5.d/S06initdoor.sh
+cd /etc/init.d/
+update-rc.d initdoor.sh defaults
 

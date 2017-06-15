@@ -48,20 +48,17 @@ while continue_reading:
     if status == MIFAREReader.MI_OK:
 
         # Print UID
-	UID=str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
+        UID=str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
         print "Card read UID: "+UID
         # open shelve to acces datastore
         ValidUIDs = shelve.open("UIDs.db", writeback=True)
         if UID in ValidUIDs:
             print("acces granted to ")
             print( ValidUIDs[UID])
-        GPIO.output(18,0)
-        sleep(5)
-        GPIO.output(18,1)
-        print "door closed"
-	else:
-        ValidUIDs[UID]=raw_input("enter name: ")
-        print "key: "+UID+" registered as "+ValidUIDs[UID]
+            gpio.output(18,0)
+            sleep(5)
+            gpio.output(18,1)
+            print "door closed"
 
         # This is the default key for authentication
         #key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
