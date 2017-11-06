@@ -17,7 +17,7 @@ continue_reading = True
 # Capture SIGINT for cleanup when the script is aborted
 def end_read(signal,frame):
     global continue_reading
-    print "Ctrl+C captured, ending read."
+    print ("Ctrl+C captured, ending read.")
     continue_reading = False
 #    gpio.cleanup()
 
@@ -33,9 +33,9 @@ gpio.output(18,1) # high means off
 MIFAREReader = MFRC522.MFRC522()
 
 # Welcome message
-print "RFID key registration and administration terminal."
-print "Press \"h\" for help"
-print "Press Ctrl-C to stop."
+print ("RFID key registration and administration terminal.")
+print ("Press \"h\" for help")
+print( "Press Ctrl-C to stop.")
 
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 
@@ -85,7 +85,7 @@ try:
 
         # If a card is found
         if status == MIFAREReader.MI_OK:
-            print "Card detected"
+            print ("Card detected")
 
         # Get the UID of the card
         (status,uid) = MIFAREReader.MFRC522_Anticoll()
@@ -95,7 +95,7 @@ try:
 
             # Print UID
             UID=str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
-            print "Card read UID: "+UID
+            print ("Card read UID: "+UID)
             if UID in ValidUIDs:
                 print("card belongs to:")
                 print( ValidUIDs[UID])
@@ -110,17 +110,17 @@ try:
                             check=True
                     if check==False:
                         ValidUIDs[UID]=newname
-                        print "key: "+UID+" registered as "+ValidUIDs[UID]
-    
+                        print ("key: "+UID+" registered as "+ValidUIDs[UID])
+
             # This is the default key for authentication
             #key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
-    
+
             # Select the scanned tag
             #MIFAREReader.MFRC522_SelectTag(uid)
-    
+
             # Authenticate
             #status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, 8, key, uid)
-    
+
             # Check if authenticated
             #if status == MIFAREReader.MI_OK:
             #    MIFAREReader.MFRC522_Read(8)

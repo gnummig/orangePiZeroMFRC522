@@ -7,8 +7,12 @@ read wifipasswd
 apt-key update
 apt-get --yes update
 apt-get --yes upgrade 
-apt-get --yes install python-dev python-pip
+apt-get --yes install python-dev python-pip locate
+updatedb   # jsut for debugging convenience and keeping the overview.
 pip install spidev --user
+# install vundle for vim --highly optional, but for convenience--
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+vim +PluginInstall +qall
 #python setup.py install
 pip install --upgrade pip --user
 pip install setuptools --user
@@ -33,10 +37,10 @@ cd ..
 # edit rc.local to run script automatically at startup
 #sudo sed -i "/exit 0/c\exec \/usr\/bin\/python \/root\/orangePiZeroMFRC522\/door.py 1>\/dev\/null 2>&1 & \nexit 0" /etc/rc.local 
 # alternatively start script via init.d
-mv orangePiZeroMFRC522/initdoor.sh /etc/init.d/initdoor.sh
-ln -s /etc/init.d/initdoor.sh /etc/rc5.d/S06initdoor.sh
-cd /etc/init.d/
-update-rc.d initdoor.sh defaults
+#mv orangePiZeroMFRC522/initdoor.sh /etc/init.d/initdoor.sh
+#ln -s /etc/init.d/initdoor.sh /etc/rc5.d/S06initdoor.sh
+#cd /etc/init.d/
+#update-rc.d initdoor.sh defaults
 # configure wifi( not sure whether it works:
 cp /etc/network/interfaces /etc/network/interfacesoriginal
 rm /etc/network/interfaces
