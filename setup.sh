@@ -9,14 +9,14 @@ apt-get --yes update
 apt-get --yes upgrade 
 apt-get --yes install python-dev python-pip locate
 updatedb   # jsut for debugging convenience and keeping the overview.
-pip install spidev --user
 # install vundle for vim --highly optional, but for convenience--
 git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 vim +PluginInstall +qall
 #python setup.py install
 pip install --upgrade pip --user
 pip install setuptools --user
-pip install pip --user
+#pip install pip --user
+pip install spidev --user
 #apt install python-dev --user
 # change owndership of the python library folder to be able to run librarys as user door
 #sudo chown -R door /usr/local/lib/

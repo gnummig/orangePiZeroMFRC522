@@ -22,8 +22,11 @@ def end_read(signal,frame):
 signal.signal(signal.SIGINT, end_read)
 # configure gpio
 gpio.init()
+# relais:
 gpio.setcfg(18, gpio.OUTPUT)
 gpio.output(18,1) # high means off 
+# beeper:
+gpio.setcfg(12, gpio.OUTPUT)
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
 
@@ -56,9 +59,13 @@ while continue_reading:
             print("acces granted to ")
             print( ValidUIDs[UID])
             gpio.output(18,0)
+            gpio.output(12,1)
+            sleep(0.1)
+            gpio.output(12,0)
             sleep(5)
             gpio.output(18,1)
             print "door closed"
+        continue_reading=False
 
         # This is the default key for authentication
         #key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]

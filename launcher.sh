@@ -1,8 +1,8 @@
 #!/bin/sh
-# launches the doorscrpt
+# launches the doorscript
 
-cd /
 cd /root/orangePiZeroMFRC522/
-python door.py &
-cd /
+while true; do 
+	python door.py
+done
 
