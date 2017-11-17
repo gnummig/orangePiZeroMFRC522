@@ -27,6 +27,8 @@ gpio.setcfg(18, gpio.OUTPUT)
 gpio.output(18,1) # high means off 
 # beeper:
 gpio.setcfg(12, gpio.OUTPUT)
+gpio.setcfg(10,gpio.INPUT)
+gpio.pullup(10,gpio.PULLUP)
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
 
@@ -36,6 +38,10 @@ print "Press Ctrl-C to stop."
 
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 while continue_reading:
+    if gpio.input(10)==1:
+        gpio.output(18,1)
+        sleep(3)
+        gpio.output(18,0)
 
     # Scan for cards    
     (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
@@ -65,6 +71,7 @@ while continue_reading:
             sleep(5)
             gpio.output(18,1)
             print "door closed"
+        # a relict from old times, that turned out to be faster switching as when staying in the while loop:
         continue_reading=False
 
         # This is the default key for authentication
