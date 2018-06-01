@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import shelve
+#import shelve
+#import numpy # actually just for saving array to csv
+import csv
 from pyA20.gpio import gpio
 from pyA20.gpio import port
 import MFRC522
@@ -37,8 +39,12 @@ print ("RFID key registration and administration terminal.")
 print ("Press \"h\" for help")
 print( "Press Ctrl-C to stop.")
 
-# This loop keeps checking for chips. If one is near it will get the UID and authenticate
+with open ('dooraccess' , 'r' ) as readfile:
+    reader = csv.reader ( readfile )
+    dooraccess = list(reader)
 
+#dooraccess = numpy.loadtxt ( 'dooraccess.csv' , delimiter = '\t' , dtype = str )
+# This loop keeps checking for chips. If one is near it will get the UID and authenticate
 old_settings = termios.tcgetattr(sys.stdin)
 try:
     tty.setcbreak(sys.stdin.fileno())
@@ -46,8 +52,10 @@ try:
 
         # open shelve to acces datastore
         ValidUIDs = shelve.open("UIDs.db", writeback=True)
+        # check for keyboard input
         if isData():
             c = sys.stdin.read(1)
+            #generate printable list, hope this gets obsolete
             outlist=[]
             for i in ValidUIDs:
                 outlist.append(ValidUIDs[i])
@@ -59,8 +67,12 @@ try:
                 print("d : delete key")
             elif c=="p":
                 print("registered cards")
+                with open ('dooraccess' , 'w' ) as writefile:
+                    writer = csv.writer ( writefile )
+                    writer.writerows(outlist)
                 for name in outlist:
                     print(name)
+
             elif c=="r":
                 print("rename card")
                 name=raw_input("enter current name")
