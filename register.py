@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-#import shelve
+import shelve
 #import numpy # actually just for saving array to csv
 import csv
 from pyA20.gpio import gpio
@@ -43,7 +43,6 @@ with open ('dooraccess' , 'r' ) as readfile:
     reader = csv.reader ( readfile )
     dooraccess = list(reader)
 
-#dooraccess = numpy.loadtxt ( 'dooraccess.csv' , delimiter = '\t' , dtype = str )
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 old_settings = termios.tcgetattr(sys.stdin)
 try:
@@ -58,7 +57,7 @@ try:
             #generate printable list, hope this gets obsolete
             outlist=[]
             for i in ValidUIDs:
-                outlist.append(ValidUIDs[i])
+                outlist.append([ValidUIDs[i] , i])
             outlist.sort()
             if c== "h":
                 print("usage:")
@@ -67,7 +66,7 @@ try:
                 print("d : delete key")
             elif c=="p":
                 print("registered cards")
-                with open ('dooraccess' , 'w' ) as writefile:
+                with open ('olddooraccess' , 'w' ) as writefile:
                     writer = csv.writer ( writefile )
                     writer.writerows(outlist)
                 for name in outlist:

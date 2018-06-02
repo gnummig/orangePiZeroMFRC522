@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import shelve
+#import shelve
+import csv
 from pyA20.gpio import gpio
 from pyA20.gpio import port
 import MFRC522
 import signal
-from time import sleep
+from time import sleep, time , ctime
 
 
 continue_reading = True
@@ -24,24 +25,32 @@ signal.signal(signal.SIGINT, end_read)
 gpio.init()
 # relais:
 gpio.setcfg(18, gpio.OUTPUT)
-gpio.output(18,1) # high means off 
+gpio.output(18,0) # high means off 
 # beeper:
 gpio.setcfg(12, gpio.OUTPUT)
 gpio.setcfg(10,gpio.INPUT)
 gpio.pullup(10,gpio.PULLUP)
 # Create an object of the class MFRC522
 MIFAREReader = MFRC522.MFRC522()
-
 # Welcome message
 print "Welcome to the MFRC522 data read example"
 print "Press Ctrl-C to stop."
-
+def door(dstate):
+    gpio.output(18,dstate)
+def beep(beeplength):
+    gpio.output(12,1)   # beep
+    sleep(beeplength)
+    gpio.output(12,0)
+admin = 0
+lastopen = 0
+admintime = 0
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 while continue_reading:
-    if gpio.input(10)==1:
-        gpio.output(18,1)
+    # there is a manual switch connected to pin 10
+    if gpio.input(10)==0:
+        door(1)
         sleep(3)
-        gpio.output(18,0)
+        door(0)
 
     # Scan for cards    
     (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
@@ -55,24 +64,75 @@ while continue_reading:
 
     # If we have the UID, continue
     if status == MIFAREReader.MI_OK:
-
-        # Print UID
         UID=str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
-        print "Card read UID: "+UID
-        # open shelve to acces datastore
-        ValidUIDs = shelve.open("UIDs.db", writeback=True)
-        if UID in ValidUIDs:
-            print("acces granted to ")
-            print( ValidUIDs[UID])
-            gpio.output(18,0)
-            gpio.output(12,1)
-            sleep(0.1)
-            gpio.output(12,0)
-            sleep(5)
-            gpio.output(18,1)
-            print "door closed"
-        # a relict from old times, that turned out to be faster switching as when staying in the while loop:
-        continue_reading=False
+        # check for register mode:
+        # MFRCC gets strange reads if reading twice in one while loop
+        print time()
+        print lastopen
+        print admin
+        if time() < lastopen + 3 and admin:
+            if oldUID == UID:
+            # if admin ard is read for longer than 5 seconds a second card can be registered
+                print "entering register mode"
+                beep(0.125)
+                sleep(0.125)
+                beep(0.125
+                registermode = True
+                admintime = time()
+        elif time() < admintime + 10:
+            registermode = True
+        else:
+            registermode = False
+
+        if registermode:
+            if oldUID != UID:
+                # dooraccess : name , UID , valid until date , registered date
+                dooraccess.append( [ card [ 0 ] + "_guest_key" , UID , time ( ) + 3600*24*14 , ctime()] )
+                print [ card [ 0 ] + "_guest_key" , UID , time ( ) + 3600*24*14 , ctime()]
+                with open ( 'dooraccess' , 'w' ) as writefile:
+                    writer = csv.writer ( writefile )
+                    writer.writerows( dooraccess )
+                os.system('sync_doors.sh')
+                beep(1)
+            lastopen = time()
+        else:
+            # Print UID
+            print "Card read UID: "+UID
+
+            # open csv on each request to have recent database
+            with open ('dooraccess' , 'r' ) as readfile:
+                reader = csv.reader ( readfile )
+                dooraccess = list(reader)
+                ValidUids = []
+            with open ('dooradmin'  , 'r' ) as readfile:
+                reader = csv.reader ( readfile )
+                dooradmin = list(reader)
+                ValidUids = []
+
+            # check for the UID in the two tables
+            for line in dooraccess:
+                if line [2] < time():
+                    dooraccess.remove(line)
+                    continue;
+                if line [1] == UID:
+                    card = line
+                    break;
+                else: card = False
+            admin = False
+            for line in dooradmin:
+                if line[1] == UID:
+                    card = line
+                    admin = True
+            if card:
+                print card [ 0 ]
+                if admin : print "admin"
+                door(1)
+                beep(0.2)
+                sleep(5)
+                door(0)
+                print "door closed"
+                lastopen = time()
+                oldUID=UID
 
         # This is the default key for authentication
         #key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
