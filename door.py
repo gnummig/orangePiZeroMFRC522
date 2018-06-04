@@ -6,9 +6,12 @@ import csv
 from pyA20.gpio import gpio
 from pyA20.gpio import port
 import MFRC522
+import os
 import signal
 from time import sleep, time , ctime
 
+OPEN = 0
+CLOSED = 1
 
 continue_reading = True
 
@@ -17,7 +20,12 @@ def end_read(signal,frame):
     global continue_reading
     print "Ctrl+C captured, ending read."
     continue_reading = False
-#    gpio.cleanup()
+def door(dstate):
+    gpio.output(18,dstate)
+def beep(beeplength):
+    gpio.output(12,1)   # beep
+    sleep(beeplength)
+    gpio.output(12,0)
 
 # Hook the SIGINT
 signal.signal(signal.SIGINT, end_read)
@@ -25,7 +33,7 @@ signal.signal(signal.SIGINT, end_read)
 gpio.init()
 # relais:
 gpio.setcfg(18, gpio.OUTPUT)
-gpio.output(18,0) # high means off 
+door(CLOSED)
 # beeper:
 gpio.setcfg(12, gpio.OUTPUT)
 gpio.setcfg(10,gpio.INPUT)
@@ -35,22 +43,17 @@ MIFAREReader = MFRC522.MFRC522()
 # Welcome message
 print "Welcome to the MFRC522 data read example"
 print "Press Ctrl-C to stop."
-def door(dstate):
-    gpio.output(18,dstate)
-def beep(beeplength):
-    gpio.output(12,1)   # beep
-    sleep(beeplength)
-    gpio.output(12,0)
 admin = 0
 lastopen = 0
 admintime = 0
+registermode = 0
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 while continue_reading:
     # there is a manual switch connected to pin 10
     if gpio.input(10)==0:
-        door(1)
+        door(OPEN)
         sleep(3)
-        door(0)
+        door(CLOSED)
 
     # Scan for cards    
     (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
@@ -63,27 +66,17 @@ while continue_reading:
     (status,uid) = MIFAREReader.MFRC522_Anticoll()
 
     # If we have the UID, continue
+    if registermode and time() > admintime +10:
+        registermode = False
+	print " exiting register mode"		
     if status == MIFAREReader.MI_OK:
+    
         UID=str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])
         # check for register mode:
         # MFRCC gets strange reads if reading twice in one while loop
         print time()
         print lastopen
         print admin
-        if time() < lastopen + 3 and admin:
-            if oldUID == UID:
-            # if admin ard is read for longer than 5 seconds a second card can be registered
-                print "entering register mode"
-                beep(0.125)
-                sleep(0.125)
-                beep(0.125
-                registermode = True
-                admintime = time()
-        elif time() < admintime + 10:
-            registermode = True
-        else:
-            registermode = False
-
         if registermode:
             if oldUID != UID:
                 # dooraccess : name , UID , valid until date , registered date
@@ -92,9 +85,18 @@ while continue_reading:
                 with open ( 'dooraccess' , 'w' ) as writefile:
                     writer = csv.writer ( writefile )
                     writer.writerows( dooraccess )
-                os.system('sync_doors.sh')
+                #os.system('sync_doors.sh')
                 beep(1)
             lastopen = time()
+        elif time() < lastopen + 3 and admin and oldUID == UID:
+            # if admin ard is read for longer than 5 seconds a second card can be registered
+            print "entering register mode"
+            beep(0.125)
+            sleep(0.125)
+            beep(0.125)
+            admintime = time()
+            registermode = True
+
         else:
             # Print UID
             print "Card read UID: "+UID
@@ -126,10 +128,10 @@ while continue_reading:
             if card:
                 print card [ 0 ]
                 if admin : print "admin"
-                door(1)
+                door(OPEN)
                 beep(0.2)
                 sleep(5)
-                door(0)
+                door(CLOSED)
                 print "door closed"
                 lastopen = time()
                 oldUID=UID
